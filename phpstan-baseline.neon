@@ -1,107 +1,37 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Call to an undefined method Symfony\\\\Component\\\\Form\\\\FormError\\|Symfony\\\\Component\\\\Form\\\\FormErrorIterator\\:\\:getMessage\\(\\)\\.$#"
+			message: "#^Call to function assert\\(\\) with true will always evaluate to true\\.$#"
 			count: 1
-			path: src/Action/LoginAction.php
+			path: src/Action/CheckEmailAction.php
 
 		-
-			message: "#^Parameter \\#1 \\$username of method Nucleos\\\\UserBundle\\\\Util\\\\UserManipulator\\:\\:activate\\(\\) expects string, array\\<string\\>\\|string\\|null given\\.$#"
+			message: "#^Call to function is_string\\(\\) with string will always evaluate to true\\.$#"
 			count: 1
-			path: src/Command/ActivateUserCommand.php
+			path: src/Action/CheckEmailAction.php
 
 		-
-			message: "#^Parameter \\#2 \\.\\.\\.\\$values of function sprintf expects bool\\|float\\|int\\|string\\|null, array\\<string\\>\\|string\\|null given\\.$#"
-			count: 1
-			path: src/Command/ActivateUserCommand.php
-
-		-
-			message: "#^Only booleans are allowed in a negated boolean, array\\<string\\>\\|string\\|null given\\.$#"
+			message: "#^Only booleans are allowed in a negated boolean, mixed given\\.$#"
 			count: 1
 			path: src/Command/ActivateUserCommand.php
 
 		-
-			message: "#^Parameter \\#1 \\$username of method Nucleos\\\\UserBundle\\\\Util\\\\UserManipulator\\:\\:changePassword\\(\\) expects string, array\\<string\\>\\|string\\|null given\\.$#"
-			count: 1
-			path: src/Command/ChangePasswordCommand.php
-
-		-
-			message: "#^Parameter \\#2 \\$password of method Nucleos\\\\UserBundle\\\\Util\\\\UserManipulator\\:\\:changePassword\\(\\) expects string, array\\<string\\>\\|string\\|null given\\.$#"
-			count: 1
-			path: src/Command/ChangePasswordCommand.php
-
-		-
-			message: "#^Parameter \\#2 \\.\\.\\.\\$values of function sprintf expects bool\\|float\\|int\\|string\\|null, array\\<string\\>\\|string\\|null given\\.$#"
-			count: 1
-			path: src/Command/ChangePasswordCommand.php
-
-		-
-			message: "#^Only booleans are allowed in a negated boolean, array\\<string\\>\\|string\\|null given\\.$#"
+			message: "#^Only booleans are allowed in a negated boolean, mixed given\\.$#"
 			count: 2
 			path: src/Command/ChangePasswordCommand.php
 
 		-
-			message: "#^Only booleans are allowed in a negated boolean, array\\<string\\>\\|bool\\|string\\|null given\\.$#"
-			count: 1
+			message: "#^Only booleans are allowed in a negated boolean, mixed given\\.$#"
+			count: 4
 			path: src/Command/CreateUserCommand.php
 
 		-
-			message: "#^Parameter \\#1 \\$username of method Nucleos\\\\UserBundle\\\\Util\\\\UserManipulator\\:\\:create\\(\\) expects string, array\\<string\\>\\|string\\|null given\\.$#"
-			count: 1
-			path: src/Command/CreateUserCommand.php
-
-		-
-			message: "#^Parameter \\#2 \\$password of method Nucleos\\\\UserBundle\\\\Util\\\\UserManipulator\\:\\:create\\(\\) expects string, array\\<string\\>\\|string\\|null given\\.$#"
-			count: 1
-			path: src/Command/CreateUserCommand.php
-
-		-
-			message: "#^Parameter \\#3 \\$email of method Nucleos\\\\UserBundle\\\\Util\\\\UserManipulator\\:\\:create\\(\\) expects string, array\\<string\\>\\|string\\|null given\\.$#"
-			count: 1
-			path: src/Command/CreateUserCommand.php
-
-		-
-			message: "#^Parameter \\#5 \\$superadmin of method Nucleos\\\\UserBundle\\\\Util\\\\UserManipulator\\:\\:create\\(\\) expects bool, array\\<string\\>\\|bool\\|string\\|null given\\.$#"
-			count: 1
-			path: src/Command/CreateUserCommand.php
-
-		-
-			message: "#^Parameter \\#2 \\.\\.\\.\\$values of function sprintf expects bool\\|float\\|int\\|string\\|null, array\\<string\\>\\|string\\|null given\\.$#"
-			count: 1
-			path: src/Command/CreateUserCommand.php
-
-		-
-			message: "#^Only booleans are allowed in a negated boolean, array\\<string\\>\\|string\\|null given\\.$#"
-			count: 3
-			path: src/Command/CreateUserCommand.php
-
-		-
-			message: "#^Parameter \\#1 \\$username of method Nucleos\\\\UserBundle\\\\Util\\\\UserManipulator\\:\\:deactivate\\(\\) expects string, array\\<string\\>\\|string\\|null given\\.$#"
+			message: "#^Only booleans are allowed in a negated boolean, mixed given\\.$#"
 			count: 1
 			path: src/Command/DeactivateUserCommand.php
 
 		-
-			message: "#^Parameter \\#2 \\.\\.\\.\\$values of function sprintf expects bool\\|float\\|int\\|string\\|null, array\\<string\\>\\|string\\|null given\\.$#"
-			count: 1
-			path: src/Command/DeactivateUserCommand.php
-
-		-
-			message: "#^Only booleans are allowed in a negated boolean, array\\<string\\>\\|string\\|null given\\.$#"
-			count: 1
-			path: src/Command/DeactivateUserCommand.php
-
-		-
-			message: "#^Parameter \\#3 \\$username of method Nucleos\\\\UserBundle\\\\Command\\\\RoleCommand\\:\\:executeRoleCommand\\(\\) expects string, array\\<string\\>\\|string\\|null given\\.$#"
-			count: 1
-			path: src/Command/RoleCommand.php
-
-		-
-			message: "#^Parameter \\#5 \\$role of method Nucleos\\\\UserBundle\\\\Command\\\\RoleCommand\\:\\:executeRoleCommand\\(\\) expects string, array\\<string\\>\\|string\\|null given\\.$#"
-			count: 1
-			path: src/Command/RoleCommand.php
-
-		-
-			message: "#^Only booleans are allowed in a negated boolean, array\\<string\\>\\|string\\|null given\\.$#"
+			message: "#^Only booleans are allowed in a negated boolean, mixed given\\.$#"
 			count: 2
 			path: src/Command/RoleCommand.php
 
@@ -116,9 +46,9 @@ parameters:
 			path: src/DependencyInjection/Compiler/InjectUserCheckerPass.php
 
 		-
-			message: "#^Call to method Symfony\\\\Component\\\\DependencyInjection\\\\ContainerBuilder\\:\\:has\\(\\) with mixed will always evaluate to true\\.$#"
-			count: 1
-			path: src/DependencyInjection/Compiler/InjectUserCheckerPass.php
+			message: "#^Call to an undefined method Symfony\\\\Component\\\\Config\\\\Definition\\\\Builder\\\\NodeDefinition\\:\\:addDefaultsIfNotSet\\(\\)\\.$#"
+			count: 2
+			path: src/DependencyInjection/Configuration.php
 
 		-
 			message: "#^Call to an undefined method Symfony\\\\Component\\\\Config\\\\Definition\\\\Builder\\\\NodeDefinition\\:\\:children\\(\\)\\.$#"
@@ -126,9 +56,19 @@ parameters:
 			path: src/DependencyInjection/Configuration.php
 
 		-
-			message: "#^Call to an undefined method Symfony\\\\Component\\\\Config\\\\Definition\\\\Builder\\\\NodeDefinition\\:\\:addDefaultsIfNotSet\\(\\)\\.$#"
-			count: 2
-			path: src/DependencyInjection/Configuration.php
+			message: "#^Method Nucleos\\\\UserBundle\\\\DependencyInjection\\\\NucleosUserExtension\\:\\:loadDeletion\\(\\) has parameter \\$config with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/DependencyInjection/NucleosUserExtension.php
+
+		-
+			message: "#^Method Nucleos\\\\UserBundle\\\\DependencyInjection\\\\NucleosUserExtension\\:\\:loadGroups\\(\\) has parameter \\$config with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/DependencyInjection/NucleosUserExtension.php
+
+		-
+			message: "#^Method Nucleos\\\\UserBundle\\\\DependencyInjection\\\\NucleosUserExtension\\:\\:loadResetting\\(\\) has parameter \\$config with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/DependencyInjection/NucleosUserExtension.php
 
 		-
 			message: "#^Method Nucleos\\\\UserBundle\\\\DependencyInjection\\\\NucleosUserExtension\\:\\:remapParameters\\(\\) has parameter \\$config with no value type specified in iterable type array\\.$#"
@@ -151,34 +91,9 @@ parameters:
 			path: src/DependencyInjection/NucleosUserExtension.php
 
 		-
-			message: "#^Method Nucleos\\\\UserBundle\\\\DependencyInjection\\\\NucleosUserExtension\\:\\:loadDeletion\\(\\) has parameter \\$config with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/DependencyInjection/NucleosUserExtension.php
-
-		-
-			message: "#^Method Nucleos\\\\UserBundle\\\\DependencyInjection\\\\NucleosUserExtension\\:\\:loadResetting\\(\\) has parameter \\$config with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/DependencyInjection/NucleosUserExtension.php
-
-		-
-			message: "#^Method Nucleos\\\\UserBundle\\\\DependencyInjection\\\\NucleosUserExtension\\:\\:loadGroups\\(\\) has parameter \\$config with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/DependencyInjection/NucleosUserExtension.php
-
-		-
-			message: "#^Property Nucleos\\\\UserBundle\\\\Doctrine\\\\GroupManager\\<GroupTemplate of Nucleos\\\\UserBundle\\\\Model\\\\GroupInterface\\>\\:\\:\\$class \\(class\\-string\\<GroupTemplate of Nucleos\\\\UserBundle\\\\Model\\\\GroupInterface\\>\\) does not accept string\\.$#"
-			count: 1
-			path: src/Doctrine/GroupManager.php
-
-		-
 			message: "#^Method Nucleos\\\\UserBundle\\\\Doctrine\\\\GroupManager\\:\\:findGroupBy\\(\\) has parameter \\$criteria with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Doctrine/GroupManager.php
-
-		-
-			message: "#^Property Nucleos\\\\UserBundle\\\\Doctrine\\\\UserManager\\:\\:\\$class \\(class\\-string\\<Nucleos\\\\UserBundle\\\\Model\\\\UserInterface\\>\\) does not accept string\\.$#"
-			count: 1
-			path: src/Doctrine/UserManager.php
 
 		-
 			message: "#^Method Nucleos\\\\UserBundle\\\\Doctrine\\\\UserManager\\:\\:findUserBy\\(\\) has parameter \\$criteria with no value type specified in iterable type array\\.$#"
@@ -189,11 +104,6 @@ parameters:
 			message: "#^Method Nucleos\\\\UserBundle\\\\EventListener\\\\FlashListener\\:\\:trans\\(\\) has parameter \\$params with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/EventListener/FlashListener.php
-
-		-
-			message: "#^Call to method Symfony\\\\Component\\\\HttpFoundation\\\\Request\\:\\:hasSession\\(\\) will always evaluate to true\\.$#"
-			count: 2
-			path: src/EventListener/LocaleEventListener.php
 
 		-
 			message: "#^Method Nucleos\\\\UserBundle\\\\Model\\\\GroupManagerInterface\\:\\:findGroupBy\\(\\) has parameter \\$criteria with no value type specified in iterable type array\\.$#"

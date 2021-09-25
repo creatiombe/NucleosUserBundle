@@ -16,9 +16,10 @@ namespace Nucleos\UserBundle\Model;
 use DateTime;
 use Serializable;
 use Symfony\Component\Security\Core\User\EquatableInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface as BaseUserInterface;
 
-interface UserInterface extends BaseUserInterface, EquatableInterface, Serializable
+interface UserInterface extends PasswordAuthenticatedUserInterface, BaseUserInterface, EquatableInterface, Serializable
 {
     public const ROLE_DEFAULT = 'ROLE_USER';
 
@@ -30,6 +31,12 @@ interface UserInterface extends BaseUserInterface, EquatableInterface, Serializa
      * @return mixed
      */
     public function getId();
+
+    /**
+     * Gets the username. This is no longer provided by the parent interface
+     * (replaced by getUserIdentifier()) but users still have usernames.
+     */
+    public function getUsername(): string;
 
     /**
      * Sets the username.

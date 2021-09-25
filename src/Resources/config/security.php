@@ -64,6 +64,7 @@ return static function (ContainerConfigurator $container): void {
             ->tag('form.type')
             ->args([
                 new Reference('security.authentication_utils'),
+                new Reference('translator'),
             ])
 
         ->set(LoginAction::class)
@@ -74,6 +75,7 @@ return static function (ContainerConfigurator $container): void {
                 new Reference('form.factory'),
                 new Reference('router'),
                 new Reference('security.csrf.token_manager'),
+                new Reference('security.authentication_utils'),
             ])
 
         ->set(LogoutAction::class)

@@ -48,9 +48,11 @@ final class CheckEmailAction
 
     public function __invoke(Request $request): Response
     {
-        $username = $request->query->get('username');
+        $username = $request->query->get('username', '');
 
-        if (null === $username || '' === trim($username)) {
+        \assert(\is_string($username));
+
+        if ('' === trim($username)) {
             // the user does not come from the sendEmail action
             return new RedirectResponse($this->router->generate('nucleos_user_resetting_request'));
         }
