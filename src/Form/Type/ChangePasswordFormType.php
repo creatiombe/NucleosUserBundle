@@ -13,10 +13,10 @@ declare(strict_types=1);
 
 namespace Nucleos\UserBundle\Form\Type;
 
+use Nucleos\UserBundle\Form\Model\ChangePassword;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Security\Core\Validator\Constraints\UserPassword;
@@ -25,12 +25,12 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 final class ChangePasswordFormType extends AbstractType
 {
     /**
-     * @var string
+     * @phpstan-var class-string<ChangePassword>
      */
-    private $class;
+    private string $class;
 
     /**
-     * @param string $class The User class name
+     * @phpstan-param class-string<ChangePassword> $class
      */
     public function __construct(string $class)
     {
@@ -69,9 +69,6 @@ final class ChangePasswordFormType extends AbstractType
                 'first_options'   => ['label' => 'form.new_password'],
                 'second_options'  => ['label' => 'form.new_password_confirmation'],
                 'invalid_message' => 'nucleos_user.password.mismatch',
-            ])
-            ->add('save', SubmitType::class, [
-                'label'  => 'change_password.submit',
             ])
         ;
     }

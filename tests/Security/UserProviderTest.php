@@ -15,30 +15,27 @@ namespace Nucleos\UserBundle\Tests\Security;
 
 use Nucleos\UserBundle\Model\User;
 use Nucleos\UserBundle\Model\UserInterface;
-use Nucleos\UserBundle\Model\UserManagerInterface;
+use Nucleos\UserBundle\Model\UserManager;
 use Nucleos\UserBundle\Security\UserProvider;
 use Nucleos\UserBundle\Tests\App\Entity\TestUser;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
-use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface as SymfonyUserInterface;
 
 final class UserProviderTest extends TestCase
 {
     /**
-     * @var MockObject
+     * @var MockObject&UserManager
      */
-    private $userManager;
+    private UserManager $userManager;
 
-    /**
-     * @var UserProvider
-     */
-    private $userProvider;
+    private UserProvider $userProvider;
 
     protected function setUp(): void
     {
-        $this->userManager  = $this->getMockBuilder(UserManagerInterface::class)->getMock();
+        $this->userManager  = $this->getMockBuilder(UserManager::class)->getMock();
         $this->userProvider = new UserProvider($this->userManager);
     }
 
@@ -56,7 +53,7 @@ final class UserProviderTest extends TestCase
 
     public function testLoadUserByInvalidUsername(): void
     {
-        $this->expectException(UsernameNotFoundException::class);
+        $this->expectException(AuthenticationException::class);
 
         $this->userManager->expects(static::once())
             ->method('findUserByUsername')
@@ -69,20 +66,17 @@ final class UserProviderTest extends TestCase
 
     public function testRefreshUserBy(): void
     {
-        $user = $this->getMockBuilder(User::class)
-                    ->setMethods(['getId'])
-                    ->getMock()
-        ;
+        $user = $this->createUser();
 
         $user->expects(static::once())
-            ->method('getId')
+            ->method('getUserIdentifier')
             ->willReturn('123')
         ;
 
         $refreshedUser = $this->getMockBuilder(UserInterface::class)->getMock();
         $this->userManager->expects(static::once())
-            ->method('findUserBy')
-            ->with(['id' => '123'])
+            ->method('findUserByUsername')
+            ->with('123')
             ->willReturn($refreshedUser)
         ;
 
@@ -96,11 +90,11 @@ final class UserProviderTest extends TestCase
 
     public function testRefreshDeleted(): void
     {
-        $this->expectException(UsernameNotFoundException::class);
+        $this->expectException(AuthenticationException::class);
 
-        $user = $this->getMockForAbstractClass(User::class);
+        $user = $this->createUser();
         $this->userManager->expects(static::once())
-            ->method('findUserBy')
+            ->method('findUserByUsername')
             ->willReturn(null)
         ;
 
@@ -138,5 +132,16 @@ final class UserProviderTest extends TestCase
         ;
 
         $this->userProvider->refreshUser($providedUser);
+    }
+
+    /**
+     * @return UserInterface&MockObject
+     */
+    private function createUser(): UserInterface
+    {
+        $user = $this->createMock(UserInterface::class);
+        $user->method('getUserIdentifier')->willReturn('123');
+
+        return $user;
     }
 }

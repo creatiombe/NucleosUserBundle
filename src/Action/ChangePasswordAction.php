@@ -19,12 +19,15 @@ use Nucleos\UserBundle\Event\GetResponseUserEvent;
 use Nucleos\UserBundle\Form\Model\ChangePassword;
 use Nucleos\UserBundle\Form\Type\ChangePasswordFormType;
 use Nucleos\UserBundle\Model\UserInterface;
-use Nucleos\UserBundle\Model\UserManagerInterface;
+use Nucleos\UserBundle\Model\UserManager;
 use Nucleos\UserBundle\NucleosUserEvents;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Security;
@@ -33,35 +36,21 @@ use Twig\Environment;
 
 final class ChangePasswordAction
 {
-    /**
-     * @var Environment
-     */
-    private $twig;
+    private Environment $twig;
 
-    /**
-     * @var RouterInterface
-     */
-    private $router;
+    private RouterInterface $router;
 
-    /**
-     * @var Security
-     */
-    private $security;
+    private Security $security;
 
-    /**
-     * @var EventDispatcherInterface
-     */
-    private $eventDispatcher;
+    private EventDispatcherInterface $eventDispatcher;
 
-    /**
-     * @var FormFactoryInterface
-     */
-    private $formFactory;
+    private FormFactoryInterface $formFactory;
 
-    /**
-     * @var UserManagerInterface
-     */
-    private $userManager;
+    private UserManager $userManager;
+
+    private UserPasswordHasherInterface $passwordHasher;
+
+    private string $loggedinRoute;
 
     public function __construct(
         Environment $twig,
@@ -69,15 +58,18 @@ final class ChangePasswordAction
         Security $security,
         EventDispatcherInterface $eventDispatcher,
         FormFactoryInterface $formFactory,
-        UserManagerInterface $userManager
+        UserManager $userManager,
+        UserPasswordHasherInterface $passwordHasher,
+        string $loggedinRoute
     ) {
         $this->twig            = $twig;
         $this->router          = $router;
         $this->security        = $security;
-        $this->userManager     = $userManager;
-
         $this->eventDispatcher = $eventDispatcher;
         $this->formFactory     = $formFactory;
+        $this->userManager     = $userManager;
+        $this->passwordHasher  = $passwordHasher;
+        $this->loggedinRoute   = $loggedinRoute;
     }
 
     /**
@@ -98,22 +90,17 @@ final class ChangePasswordAction
             return $event->getResponse();
         }
 
-        $form = $this->formFactory->create(ChangePasswordFormType::class, $formModel = new ChangePassword(), [
-            'validation_groups' => ['ChangePassword', 'Default'],
-        ]);
-
+        $form = $this->createForm($formModel = new ChangePassword());
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $event = new FormEvent($form, $request);
             $this->eventDispatcher->dispatch($event, NucleosUserEvents::CHANGE_PASSWORD_SUCCESS);
 
-            $user->setPlainPassword($formModel->getPlainPassword());
-
-            $this->userManager->updateUser($user);
+            $this->updatePassword($user, $formModel);
 
             if (null === $response = $event->getResponse()) {
-                $url      = $this->router->generate('nucleos_user_security_loggedin');
+                $url      = $this->router->generate($this->loggedinRoute);
                 $response = new RedirectResponse($url);
             }
 
@@ -125,5 +112,30 @@ final class ChangePasswordAction
         return new Response($this->twig->render('@NucleosUser/ChangePassword/change_password.html.twig', [
             'form' => $form->createView(),
         ]));
+    }
+
+    private function createForm(ChangePassword $model): FormInterface
+    {
+        return $this->formFactory
+            ->create(ChangePasswordFormType::class, $model, [
+                'validation_groups' => ['ChangePassword', 'Default'],
+            ])
+            ->add('save', SubmitType::class, [
+                'label'  => 'change_password.submit',
+            ])
+        ;
+    }
+
+    private function updatePassword(UserInterface $user, ChangePassword $model): void
+    {
+        if (null === $model->getPlainPassword()) {
+            return;
+        }
+
+        $user->setPassword(
+            $this->passwordHasher->hashPassword($user, $model->getPlainPassword())
+        );
+
+        $this->userManager->updateUser($user);
     }
 }

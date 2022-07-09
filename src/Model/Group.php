@@ -15,20 +15,12 @@ namespace Nucleos\UserBundle\Model;
 
 abstract class Group implements GroupInterface
 {
-    /**
-     * @var mixed
-     */
-    protected $id;
-
-    /**
-     * @var string
-     */
-    protected $name;
+    protected string $name;
 
     /**
      * @var string[]
      */
-    protected $roles;
+    protected array $roles;
 
     /**
      * @param string[] $roles
@@ -49,11 +41,6 @@ abstract class Group implements GroupInterface
         if (!$this->hasRole($role)) {
             $this->roles[] = strtoupper($role);
         }
-    }
-
-    public function getId()
-    {
-        return $this->id;
     }
 
     public function getName(): string

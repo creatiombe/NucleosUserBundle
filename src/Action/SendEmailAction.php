@@ -14,64 +14,49 @@ namespace Nucleos\UserBundle\Action;
 use DateTime;
 use Nucleos\UserBundle\Event\GetResponseNullableUserEvent;
 use Nucleos\UserBundle\Event\GetResponseUserEvent;
-use Nucleos\UserBundle\Mailer\MailerInterface;
+use Nucleos\UserBundle\Mailer\ResettingMailer;
 use Nucleos\UserBundle\Model\UserInterface;
-use Nucleos\UserBundle\Model\UserManagerInterface;
+use Nucleos\UserBundle\Model\UserManager;
 use Nucleos\UserBundle\NucleosUserEvents;
-use Nucleos\UserBundle\Util\TokenGeneratorInterface;
+use Nucleos\UserBundle\Util\TokenGenerator;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Security\Core\Exception\UserNotFoundException;
+use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 final class SendEmailAction
 {
-    /**
-     * @var RouterInterface
-     */
-    private $router;
+    private RouterInterface $router;
 
-    /**
-     * @var EventDispatcherInterface
-     */
-    private $eventDispatcher;
+    private EventDispatcherInterface $eventDispatcher;
 
-    /**
-     * @var UserManagerInterface
-     */
-    private $userManager;
+    private UserManager $userManager;
 
-    /**
-     * @var TokenGeneratorInterface
-     */
-    private $tokenGenerator;
+    private TokenGenerator $tokenGenerator;
 
-    /**
-     * @var MailerInterface
-     */
-    private $mailer;
+    private ResettingMailer $mailer;
 
-    /**
-     * @var int
-     */
-    private $retryTtl;
+    private int $retryTtl;
 
-    /**
-     * SendEmailAction constructor.
-     */
+    private UserProviderInterface $userProvider;
+
     public function __construct(
         RouterInterface $router,
         EventDispatcherInterface $eventDispatcher,
-        UserManagerInterface $userManager,
-        TokenGeneratorInterface $tokenGenerator,
-        MailerInterface $mailer,
+        UserManager $userManager,
+        TokenGenerator $tokenGenerator,
+        UserProviderInterface $userProvider,
+        ResettingMailer $mailer,
         int $retryTtl
     ) {
         $this->router          = $router;
         $this->eventDispatcher = $eventDispatcher;
         $this->userManager     = $userManager;
         $this->tokenGenerator  = $tokenGenerator;
+        $this->userProvider    = $userProvider;
         $this->mailer          = $mailer;
         $this->retryTtl        = $retryTtl;
     }
@@ -80,9 +65,14 @@ final class SendEmailAction
     {
         $username = (string) $request->request->get('username', '');
 
-        $user = '' === $username ? null : $this->userManager->findUserByUsernameOrEmail($username);
+        $user = null;
 
-        if (null !== $user) {
+        try {
+            $user = '' === $username ? null : $this->userProvider->loadUserByIdentifier($username);
+        } catch (UserNotFoundException) {
+        }
+
+        if ($user instanceof UserInterface) {
             $response = $this->process($request, $user);
 
             if (null !== $response) {

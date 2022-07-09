@@ -57,6 +57,7 @@ return static function (ContainerConfigurator $container): void {
                 new Reference('event_dispatcher'),
                 new Reference('form.factory'),
                 new Reference('nucleos_user.user_manager'),
+                '%nucleos_user.loggedin.route%',
             ])
 
         ->set(SendEmailAction::class)
@@ -66,6 +67,7 @@ return static function (ContainerConfigurator $container): void {
                 new Reference('event_dispatcher'),
                 new Reference('nucleos_user.user_manager'),
                 new Reference('nucleos_user.util.token_generator'),
+                new Reference('security.user_providers'),
                 new Reference('nucleos_user.mailer'),
                 new Parameter('nucleos_user.resetting.retry_ttl'),
             ])

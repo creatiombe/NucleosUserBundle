@@ -29,10 +29,7 @@ use Symfony\Component\Yaml\Parser;
  */
 final class NucleosUserExtensionTest extends TestCase
 {
-    /**
-     * @var ContainerBuilder
-     */
-    protected $configuration;
+    protected ContainerBuilder $configuration;
 
     public function testUserLoadThrowsExceptionUnlessDatabaseDriverIsValid(): void
     {
@@ -136,9 +133,10 @@ final class NucleosUserExtensionTest extends TestCase
     {
         $this->createEmptyConfiguration();
 
-        $this->assertAlias('nucleos_user.mailer.default', 'nucleos_user.mailer');
-        $this->assertAlias('nucleos_user.util.canonicalizer.default', 'nucleos_user.util.email_canonicalizer');
-        $this->assertAlias('nucleos_user.util.canonicalizer.default', 'nucleos_user.util.username_canonicalizer');
+        $this->assertParameter('custom_loggedin', 'nucleos_user.loggedin.route');
+        $this->assertAlias('nucleos_user.mailer.simple', 'nucleos_user.mailer');
+        $this->assertAlias('nucleos_user.util.canonicalizer.simple', 'nucleos_user.util.email_canonicalizer');
+        $this->assertAlias('nucleos_user.util.canonicalizer.simple', 'nucleos_user.util.username_canonicalizer');
     }
 
     public function testUserLoadUtilService(): void
@@ -237,6 +235,8 @@ db_driver: mongodb
 firewall_name: nucleos_user
 user_class: Acme\MyBundle\Document\User
 from_email: Acme Corp <admin@acme.org>
+loggedin:
+    route: custom_loggedin
 EOF;
         $parser = new Parser();
 
@@ -266,6 +266,8 @@ group:
     group_class: Acme\MyBundle\Entity\Group
 deletion:
     enabled: true
+loggedin:
+    route: custom_loggedin
 EOF;
         $parser = new Parser();
 

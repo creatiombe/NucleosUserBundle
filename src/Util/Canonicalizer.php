@@ -13,20 +13,7 @@ declare(strict_types=1);
 
 namespace Nucleos\UserBundle\Util;
 
-final class Canonicalizer implements CanonicalizerInterface
+interface Canonicalizer
 {
-    public function canonicalize(?string $string): string
-    {
-        if (null === $string) {
-            return '';
-        }
-
-        $encoding = mb_detect_encoding($string, mb_detect_order(), true);
-
-        if (false !== $encoding) {
-            return mb_convert_case($string, MB_CASE_LOWER, $encoding);
-        }
-
-        return mb_convert_case($string, MB_CASE_LOWER);
-    }
+    public function canonicalize(?string $string): string;
 }

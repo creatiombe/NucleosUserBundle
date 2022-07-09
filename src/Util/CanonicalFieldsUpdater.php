@@ -15,46 +15,11 @@ namespace Nucleos\UserBundle\Util;
 
 use Nucleos\UserBundle\Model\UserInterface;
 
-class CanonicalFieldsUpdater
+interface CanonicalFieldsUpdater
 {
-    /**
-     * @var CanonicalizerInterface
-     */
-    private $usernameCanonicalizer;
+    public function updateCanonicalFields(UserInterface $user): void;
 
-    /**
-     * @var CanonicalizerInterface
-     */
-    private $emailCanonicalizer;
+    public function canonicalizeEmail(?string $email): string;
 
-    public function __construct(CanonicalizerInterface $usernameCanonicalizer, CanonicalizerInterface $emailCanonicalizer)
-    {
-        $this->usernameCanonicalizer = $usernameCanonicalizer;
-        $this->emailCanonicalizer    = $emailCanonicalizer;
-    }
-
-    public function updateCanonicalFields(UserInterface $user): void
-    {
-        $usernameCanonical = $this->canonicalizeUsername($user->getUsername());
-
-        if ('' !== $usernameCanonical) {
-            $user->setUsernameCanonical($usernameCanonical);
-        }
-
-        $emailCanonical = $this->canonicalizeEmail($user->getEmail());
-
-        if ('' !== $emailCanonical) {
-            $user->setEmailCanonical($emailCanonical);
-        }
-    }
-
-    public function canonicalizeEmail(?string $email): string
-    {
-        return $this->emailCanonicalizer->canonicalize($email);
-    }
-
-    public function canonicalizeUsername(?string $username): string
-    {
-        return $this->usernameCanonicalizer->canonicalize($username);
-    }
+    public function canonicalizeUsername(?string $username): string;
 }

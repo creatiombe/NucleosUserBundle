@@ -36,18 +36,13 @@ parameters:
 			path: src/Command/RoleCommand.php
 
 		-
-			message: "#^Binary operation \"\\.\" between 'security…' and array\\|bool\\|float\\|int\\|string\\|null results in an error\\.$#"
-			count: 4
-			path: src/DependencyInjection/Compiler/InjectRememberMeServicesPass.php
-
-		-
 			message: "#^Binary operation \"\\.\" between 'security\\.user…' and array\\|bool\\|float\\|int\\|string\\|null results in an error\\.$#"
 			count: 2
 			path: src/DependencyInjection/Compiler/InjectUserCheckerPass.php
 
 		-
 			message: "#^Call to an undefined method Symfony\\\\Component\\\\Config\\\\Definition\\\\Builder\\\\NodeDefinition\\:\\:addDefaultsIfNotSet\\(\\)\\.$#"
-			count: 2
+			count: 3
 			path: src/DependencyInjection/Configuration.php
 
 		-
@@ -62,6 +57,11 @@ parameters:
 
 		-
 			message: "#^Method Nucleos\\\\UserBundle\\\\DependencyInjection\\\\NucleosUserExtension\\:\\:loadGroups\\(\\) has parameter \\$config with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/DependencyInjection/NucleosUserExtension.php
+
+		-
+			message: "#^Method Nucleos\\\\UserBundle\\\\DependencyInjection\\\\NucleosUserExtension\\:\\:loadLoggedin\\(\\) has parameter \\$config with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/DependencyInjection/NucleosUserExtension.php
 
@@ -91,39 +91,9 @@ parameters:
 			path: src/DependencyInjection/NucleosUserExtension.php
 
 		-
-			message: "#^Method Nucleos\\\\UserBundle\\\\Doctrine\\\\GroupManager\\:\\:findGroupBy\\(\\) has parameter \\$criteria with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/Doctrine/GroupManager.php
-
-		-
-			message: "#^Method Nucleos\\\\UserBundle\\\\Doctrine\\\\UserManager\\:\\:findUserBy\\(\\) has parameter \\$criteria with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/Doctrine/UserManager.php
-
-		-
 			message: "#^Method Nucleos\\\\UserBundle\\\\EventListener\\\\FlashListener\\:\\:trans\\(\\) has parameter \\$params with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/EventListener/FlashListener.php
-
-		-
-			message: "#^Method Nucleos\\\\UserBundle\\\\Model\\\\GroupManagerInterface\\:\\:findGroupBy\\(\\) has parameter \\$criteria with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/Model/GroupManagerInterface.php
-
-		-
-			message: "#^Method Nucleos\\\\UserBundle\\\\Model\\\\UserManagerInterface\\:\\:findUserBy\\(\\) has parameter \\$criteria with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/Model/UserManagerInterface.php
-
-		-
-			message: "#^Method Nucleos\\\\UserBundle\\\\Noop\\\\GroupManager\\:\\:findGroupBy\\(\\) has parameter \\$criteria with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/Noop/GroupManager.php
-
-		-
-			message: "#^Method Nucleos\\\\UserBundle\\\\Noop\\\\UserManager\\:\\:findUserBy\\(\\) has parameter \\$criteria with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/Noop/UserManager.php
 
 		-
 			message: "#^Method Nucleos\\\\UserBundle\\\\Tests\\\\DependencyInjection\\\\NucleosUserExtensionTest\\:\\:getEmptyConfig\\(\\) return type has no value type specified in iterable type array\\.$#"
@@ -136,7 +106,7 @@ parameters:
 			path: tests/DependencyInjection/NucleosUserExtensionTest.php
 
 		-
-			message: "#^Method Nucleos\\\\UserBundle\\\\Tests\\\\Model\\\\UserManagerTest\\:\\:getUserManager\\(\\) has parameter \\$args with no value type specified in iterable type array\\.$#"
+			message: "#^Method Nucleos\\\\UserBundle\\\\Tests\\\\Model\\\\BaseUserManagerTest\\:\\:getUserManager\\(\\) has parameter \\$args with no value type specified in iterable type array\\.$#"
 			count: 1
-			path: tests/Model/UserManagerTest.php
+			path: tests/Model/BaseUserManagerTest.php
 

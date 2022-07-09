@@ -12,7 +12,6 @@
 namespace Nucleos\UserBundle\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -26,17 +25,11 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 final class LoginFormType extends AbstractType
 {
-    /**
-     * @var AuthenticationUtils
-     */
-    private $authenticationUtils;
+    private AuthenticationUtils $authenticationUtils;
 
-    /**
-     * @var TranslatorInterface|null
-     */
-    private $translator;
+    private TranslatorInterface $translator;
 
-    public function __construct(AuthenticationUtils $authenticationUtils, ?TranslatorInterface $translator = null)
+    public function __construct(AuthenticationUtils $authenticationUtils, TranslatorInterface $translator)
     {
         $this->authenticationUtils = $authenticationUtils;
         $this->translator          = $translator;
@@ -57,11 +50,6 @@ final class LoginFormType extends AbstractType
                     'autocomplete' => 'password',
                 ],
             ])
-            ->add('_remember_me', CheckboxType::class, [
-                'label'    => 'security.login.remember_me',
-                'required' => false,
-                'value'    => 'on',
-            ])
             ->add('_target_path', HiddenType::class)
         ;
 
@@ -70,10 +58,8 @@ final class LoginFormType extends AbstractType
         $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) use ($authenticationUtils): void {
             $error = $authenticationUtils->getLastAuthenticationError();
             if (null !== $error) {
-                $message = $error->getMessage();
-                if (null !== $this->translator) {
-                    $message = $this->translator->trans($message, [], 'NucleosUserBundle');
-                }
+                $message = $this->translator->trans($error->getMessage(), [], 'NucleosUserBundle');
+
                 $event->getForm()->addError(new FormError($message));
             }
 

@@ -15,33 +15,26 @@ namespace Nucleos\UserBundle\Doctrine;
 
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Persistence\ObjectRepository;
+use Nucleos\UserBundle\Model\BaseGroupManager as BaseGroupManager;
 use Nucleos\UserBundle\Model\GroupInterface;
-use Nucleos\UserBundle\Model\GroupManager as BaseGroupManager;
 
 /**
  * @phpstan-template GroupTemplate of \Nucleos\UserBundle\Model\GroupInterface
- * @phpstan-extends \Nucleos\UserBundle\Model\GroupManager<GroupTemplate>
+ * @phpstan-extends BaseGroupManager<GroupTemplate>
  */
 final class GroupManager extends BaseGroupManager
 {
-    /**
-     * @var ObjectManager
-     */
-    private $objectManager;
+    private ObjectManager $objectManager;
 
     /**
-     * @var string
-     *
      * @phpstan-var class-string<GroupTemplate>
      */
-    private $class;
+    private string $class;
 
     /**
-     * @var ObjectRepository
-     *
      * @phpstan-var ObjectRepository<GroupTemplate>
      */
-    private $repository;
+    private ObjectRepository $repository;
 
     /**
      * @phpstan-param class-string<GroupTemplate> $class
@@ -73,7 +66,6 @@ final class GroupManager extends BaseGroupManager
 
     public function findGroups(): array
     {
-        // @phpstan-ignore-next-line
         return $this->repository->findAll();
     }
 

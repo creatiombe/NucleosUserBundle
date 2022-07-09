@@ -33,6 +33,9 @@ final class ConfigurationTest extends TestCase
                 'group_class'   => Group::class,
                 'group_manager' => 'nucleos_user.group_manager.default',
             ],
+            'loggedin' => [
+                'route' => 'custom_loggedin',
+            ],
             'db_driver'                   => 'noop',
             'model_manager_name'          => null,
             'use_authentication_listener' => true,
@@ -46,10 +49,10 @@ final class ConfigurationTest extends TestCase
                 'enabled' => false,
             ],
             'service' => [
-                'mailer'                 => 'nucleos_user.mailer.default',
-                'email_canonicalizer'    => 'nucleos_user.util.canonicalizer.default',
-                'token_generator'        => 'nucleos_user.util.token_generator.default',
-                'username_canonicalizer' => 'nucleos_user.util.canonicalizer.default',
+                'mailer'                 => 'nucleos_user.mailer.simple',
+                'email_canonicalizer'    => 'nucleos_user.util.canonicalizer.simple',
+                'token_generator'        => 'nucleos_user.util.token_generator.simple',
+                'username_canonicalizer' => 'nucleos_user.util.canonicalizer.simple',
                 'user_manager'           => 'nucleos_user.user_manager.default',
             ],
         ];
@@ -68,6 +71,9 @@ final class ConfigurationTest extends TestCase
             'user_class'    => User::class,
             'group'         => [
                 'group_class' => Group::class,
+            ],
+            'loggedin' => [
+                'route' => 'custom_loggedin',
             ],
         ];
     }

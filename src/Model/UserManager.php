@@ -13,77 +13,66 @@ declare(strict_types=1);
 
 namespace Nucleos\UserBundle\Model;
 
-use Nucleos\UserBundle\Util\CanonicalFieldsUpdater;
-use Nucleos\UserBundle\Util\PasswordUpdaterInterface;
-
-abstract class UserManager implements UserManagerInterface
+interface UserManager
 {
     /**
-     * @var PasswordUpdaterInterface
+     * Creates an empty user instance.
      */
-    private $passwordUpdater;
+    public function createUser(): UserInterface;
+
     /**
-     * @var CanonicalFieldsUpdater
+     * Deletes a user.
      */
-    private $canonicalFieldsUpdater;
+    public function deleteUser(UserInterface $user): void;
 
-    public function __construct(PasswordUpdaterInterface $passwordUpdater, CanonicalFieldsUpdater $canonicalFieldsUpdater)
-    {
-        $this->passwordUpdater        = $passwordUpdater;
-        $this->canonicalFieldsUpdater = $canonicalFieldsUpdater;
-    }
+    /**
+     * Finds one user by the given criteria.
+     *
+     * @param array<string, mixed> $criteria
+     */
+    public function findUserBy(array $criteria): ?UserInterface;
 
-    public function createUser(): UserInterface
-    {
-        $class = $this->getClass();
+    /**
+     * Find a user by its username.
+     */
+    public function findUserByUsername(string $username): ?UserInterface;
 
-        return new $class();
-    }
+    /**
+     * Finds a user by its email.
+     */
+    public function findUserByEmail(string $email): ?UserInterface;
 
-    public function findUserByEmail(string $email): ?UserInterface
-    {
-        return $this->findUserBy(['emailCanonical' => $this->canonicalFieldsUpdater->canonicalizeEmail($email)]);
-    }
+    /**
+     * Finds a user by its confirmationToken.
+     */
+    public function findUserByConfirmationToken(string $token): ?UserInterface;
 
-    public function findUserByUsername(string $username): ?UserInterface
-    {
-        return $this->findUserBy(['usernameCanonical' => $this->canonicalFieldsUpdater->canonicalizeUsername($username)]);
-    }
+    /**
+     * Returns a collection with all user instances.
+     *
+     * @return UserInterface[]
+     */
+    public function findUsers(): array;
 
-    public function findUserByUsernameOrEmail(string $usernameOrEmail): ?UserInterface
-    {
-        if (0 !== preg_match('/^.+\@\S+\.\S+$/', $usernameOrEmail)) {
-            $user = $this->findUserByEmail($usernameOrEmail);
-            if (null !== $user) {
-                return $user;
-            }
-        }
+    /**
+     * Returns the user's fully qualified class name.
+     *
+     * @phpstan-return class-string<UserInterface>
+     */
+    public function getClass(): string;
 
-        return $this->findUserByUsername($usernameOrEmail);
-    }
+    /**
+     * Reloads a user.
+     */
+    public function reloadUser(UserInterface $user): void;
 
-    public function findUserByConfirmationToken(string $token): ?UserInterface
-    {
-        return $this->findUserBy(['confirmationToken' => $token]);
-    }
+    /**
+     * Updates a user.
+     */
+    public function updateUser(UserInterface $user, bool $andFlush = true): void;
 
-    public function updateCanonicalFields(UserInterface $user): void
-    {
-        $this->canonicalFieldsUpdater->updateCanonicalFields($user);
-    }
-
-    public function updatePassword(UserInterface $user): void
-    {
-        $this->passwordUpdater->hashPassword($user);
-    }
-
-    protected function getPasswordUpdater(): PasswordUpdaterInterface
-    {
-        return $this->passwordUpdater;
-    }
-
-    protected function getCanonicalFieldsUpdater(): CanonicalFieldsUpdater
-    {
-        return $this->canonicalFieldsUpdater;
-    }
+    /**
+     * Updates the canonical username and email fields for a user.
+     */
+    public function updateCanonicalFields(UserInterface $user): void;
 }

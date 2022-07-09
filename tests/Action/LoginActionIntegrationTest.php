@@ -17,12 +17,12 @@ use Nucleos\UserBundle\Tests\App\AppKernel;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
+/**
+ * @covers \Nucleos\UserBundle\Action\LoginAction
+ */
 final class LoginActionIntegrationTest extends WebTestCase
 {
-    /**
-     * @var KernelBrowser
-     */
-    private $client;
+    private KernelBrowser $client;
 
     protected function setUp(): void
     {

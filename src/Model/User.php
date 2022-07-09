@@ -16,99 +16,55 @@ namespace Nucleos\UserBundle\Model;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use DomainException;
 use Symfony\Component\Security\Core\User\UserInterface as BaseUserInterface;
 
 /**
- * @phpstan-template GroupTemplate of \Nucleos\UserBundle\Model\GroupInterface
- * @phpstan-implements \Nucleos\UserBundle\Model\GroupableInterface<GroupTemplate>
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ *
+ * @phpstan-template GroupTemplate of GroupInterface
+ * @phpstan-implements GroupAwareUser<GroupTemplate>
+ *
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  */
-abstract class User implements UserInterface, GroupableInterface, LocaleAwareInterface
+abstract class User implements UserInterface, GroupAwareUser, LocaleAwareUser
 {
-    /**
-     * @var mixed
-     */
-    protected $id;
+    protected ?string $username = null;
 
-    /**
-     * @var string|null
-     */
-    protected $username;
+    protected ?string $usernameCanonical = null;
 
-    /**
-     * @var string|null
-     */
-    protected $usernameCanonical;
+    protected ?string $email = null;
 
-    /**
-     * @var string|null
-     */
-    protected $email;
+    protected ?string $emailCanonical = null;
 
-    /**
-     * @var string|null
-     */
-    protected $emailCanonical;
+    protected bool $enabled = false;
 
-    /**
-     * @var bool
-     */
-    protected $enabled;
+    protected ?string $password = null;
 
-    /**
-     * @var string|null
-     */
-    protected $salt;
+    protected ?string $plainPassword = null;
 
-    /**
-     * @var string|null
-     */
-    protected $password;
+    protected ?DateTime $lastLogin = null;
 
-    /**
-     * @var string|null
-     */
-    protected $plainPassword;
+    protected ?string $confirmationToken = null;
 
-    /**
-     * @var DateTime|null
-     */
-    protected $lastLogin;
-
-    /**
-     * @var string|null
-     */
-    protected $confirmationToken;
-
-    /**
-     * @var DateTime|null
-     */
-    protected $passwordRequestedAt;
+    protected ?DateTime $passwordRequestedAt = null;
 
     /**
      * @phpstan-var Collection<array-key, GroupTemplate>
      */
-    protected $groups;
+    protected Collection $groups;
 
     /**
      * @var string[]
      */
-    protected $roles;
+    protected array $roles = [];
 
-    /**
-     * @var string|null
-     */
-    protected $locale;
+    protected ?string $locale = null;
 
-    /**
-     * @var string|null
-     */
-    protected $timezone;
+    protected ?string $timezone = null;
 
     public function __construct()
     {
-        $this->enabled = false;
-        $this->roles   = [];
+        $this->groups = new ArrayCollection();
     }
 
     public function __toString(): string
@@ -125,104 +81,39 @@ abstract class User implements UserInterface, GroupableInterface, LocaleAwareInt
         }
     }
 
-    public function serialize(): string
-    {
-        return serialize([
-            $this->password,
-            $this->salt,
-            $this->usernameCanonical,
-            $this->username,
-            $this->enabled,
-            $this->id,
-            $this->email,
-            $this->emailCanonical,
-        ]);
-    }
-
-    public function unserialize($serialized): void
-    {
-        $data = unserialize($serialized);
-
-        if (13 === \count($data)) {
-            // Unserializing a User object from 1.3.x
-            unset($data[4], $data[5], $data[6], $data[9], $data[10]);
-            $data = array_values($data);
-        } elseif (11 === \count($data)) {
-            // Unserializing a User from a dev version somewhere between 2.0-alpha3 and 2.0-beta1
-            unset($data[4], $data[7], $data[8]);
-            $data = array_values($data);
-        }
-
-        [
-            $this->password,
-            $this->salt,
-            $this->usernameCanonical,
-            $this->username,
-            $this->enabled,
-            $this->id,
-            $this->email,
-            $this->emailCanonical
-        ] = $data;
-    }
-
     public function eraseCredentials(): void
     {
         $this->plainPassword = null;
     }
 
-    public function getId()
-    {
-        return $this->id;
-    }
-
     public function getUsername(): string
     {
-        if (null === $this->username) {
-            throw new DomainException('Username cannot be null');
-        }
+        return $this->username ?? '';
+    }
 
-        return $this->username;
+    public function getUserIdentifier(): string
+    {
+        return $this->getUsername();
     }
 
     public function getUsernameCanonical(): string
     {
-        if (null === $this->usernameCanonical) {
-            throw new DomainException('Username cannot be null');
-        }
-
-        return $this->usernameCanonical;
-    }
-
-    public function getSalt(): ?string
-    {
-        return $this->salt;
+        return $this->usernameCanonical ?? '';
     }
 
     public function getEmail(): string
     {
-        if (null === $this->email) {
-            throw new DomainException('Email cannot be null');
-        }
-
-        return $this->email;
+        return $this->email ?? '';
     }
 
     public function getEmailCanonical(): string
     {
-        if (null === $this->emailCanonical) {
-            throw new DomainException('Email cannot be null');
-        }
-
-        return $this->emailCanonical;
+        return $this->emailCanonical ?? '';
     }
 
     public function getPassword(): string
     {
-        if (null === $this->password) {
-            throw new DomainException('Password cannot be null');
-        }
-
-        return $this->password;
+        return $this->password ?? '';
     }
 
     public function getPlainPassword(): ?string
@@ -302,11 +193,6 @@ abstract class User implements UserInterface, GroupableInterface, LocaleAwareInt
         $this->usernameCanonical = $usernameCanonical;
     }
 
-    public function setSalt(?string $salt): void
-    {
-        $this->salt = $salt;
-    }
-
     public function setEmail(string $email): void
     {
         $this->email = $email;
@@ -378,8 +264,8 @@ abstract class User implements UserInterface, GroupableInterface, LocaleAwareInt
 
     public function getGroups(): Collection
     {
-        if (null === $this->groups) {
-            $this->groups = new ArrayCollection();
+        if (!isset($this->groups)) {
+            return new ArrayCollection();
         }
 
         return $this->groups;
@@ -435,6 +321,16 @@ abstract class User implements UserInterface, GroupableInterface, LocaleAwareInt
     }
 
     /**
+     * @deprecated since symfony 5.4
+     *
+     * @return string|null
+     */
+    public function getSalt()
+    {
+        return null;
+    }
+
+    /**
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
     public function isEqualTo(BaseUserInterface $user): bool
@@ -444,10 +340,6 @@ abstract class User implements UserInterface, GroupableInterface, LocaleAwareInt
         }
 
         if ($this->password !== $user->getPassword()) {
-            return false;
-        }
-
-        if ($this->salt !== $user->getSalt()) {
             return false;
         }
 

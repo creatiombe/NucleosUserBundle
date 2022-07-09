@@ -1,19 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="4.7.3@38c452ae584467e939d55377aaf83b5a26f19dd1">
+<files psalm-version="4.20.0@f82a70e7edfc6cf2705e9374c8a0b6a974a779ed">
   <file src="src/Action/ChangePasswordAction.php">
-    <InvalidNullableReturnType occurrences="1">
-      <code>Response</code>
-    </InvalidNullableReturnType>
-    <NullableReturnStatement occurrences="1">
-      <code>$event-&gt;getResponse()</code>
-    </NullableReturnStatement>
-  </file>
-  <file src="src/Action/CheckEmailAction.php">
-    <InvalidArgument occurrences="1">
-      <code>$username</code>
-    </InvalidArgument>
-  </file>
-  <file src="src/Action/LoggedinAction.php">
     <InvalidNullableReturnType occurrences="1">
       <code>Response</code>
     </InvalidNullableReturnType>
@@ -30,16 +17,18 @@
     </NullableReturnStatement>
   </file>
   <file src="src/DependencyInjection/Configuration.php">
-    <UndefinedMethod occurrences="5">
+    <UndefinedMethod occurrences="6">
+      <code>addDefaultsIfNotSet</code>
+      <code>addDefaultsIfNotSet</code>
       <code>addDefaultsIfNotSet</code>
       <code>children</code>
       <code>children</code>
       <code>children</code>
     </UndefinedMethod>
   </file>
-  <file src="src/Model/GroupManagerInterface.php">
-    <InvalidDocblock occurrences="1">
-      <code>public function findGroups(): array;</code>
-    </InvalidDocblock>
+  <file src="src/Model/User.php">
+    <RedundantPropertyInitializationCheck occurrences="1">
+      <code>isset($this-&gt;groups)</code>
+    </RedundantPropertyInitializationCheck>
   </file>
 </files>

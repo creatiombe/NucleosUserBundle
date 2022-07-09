@@ -19,6 +19,9 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
 final class PatternValidator extends ConstraintValidator
 {
+    /**
+     * @param mixed $value
+     */
     public function validate($value, Constraint $constraint): void
     {
         if (!$constraint instanceof Pattern) {
@@ -105,6 +108,6 @@ final class PatternValidator extends ConstraintValidator
     {
         $result = preg_match_all($pattern, $text);
 
-        return false === $result ? 0 : $result;
+        return \is_int($result) ? $result : 0;
     }
 }

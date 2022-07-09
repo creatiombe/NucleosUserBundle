@@ -16,35 +16,41 @@ namespace Nucleos\UserBundle\Tests\EventListener;
 use Nucleos\UserBundle\EventListener\FlashListener;
 use Nucleos\UserBundle\NucleosUserEvents;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Contracts\EventDispatcher\Event;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 final class FlashListenerTest extends TestCase
 {
-    /**
-     * @var Event
-     */
-    private $event;
+    private Event $event;
 
-    /**
-     * @var FlashListener
-     */
-    private $listener;
+    private FlashListener $listener;
 
     protected function setUp(): void
     {
         $this->event = new Event();
 
-        $flashBag = $this->getMockBuilder(FlashBag::class)->getMock();
+        $flashBag = $this->createMock(FlashBagInterface::class);
+
+        $sesion = $this->createMock(Session::class);
+        $sesion->method('getFlashBag')->willReturn($flashBag);
+
+        $request = new Request();
+        $request->setSession($sesion);
+
+        $requestStack = new RequestStack();
+        $requestStack->push($request);
 
         $translator = $this->createMock(TranslatorInterface::class);
 
         $translator->method('trans')
-            ->willReturn(static::returnArgument(0))
+            ->willReturnArgument(0)
         ;
 
-        $this->listener = new FlashListener($flashBag, $translator);
+        $this->listener = new FlashListener($requestStack, $translator);
     }
 
     public function testAddSuccessFlash(): void

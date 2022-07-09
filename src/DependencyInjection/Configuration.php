@@ -30,6 +30,7 @@ final class Configuration implements ConfigurationInterface
         $this->addDeletionSection($rootNode);
         $this->addGroupSection($rootNode);
         $this->addServiceSection($rootNode);
+        $this->addLoggedinSection($rootNode);
 
         return $treeBuilder;
     }
@@ -110,10 +111,10 @@ final class Configuration implements ConfigurationInterface
                 ->arrayNode('service')
                     ->addDefaultsIfNotSet()
                         ->children()
-                            ->scalarNode('mailer')->defaultValue('nucleos_user.mailer.default')->end()
-                            ->scalarNode('email_canonicalizer')->defaultValue('nucleos_user.util.canonicalizer.default')->end()
-                            ->scalarNode('token_generator')->defaultValue('nucleos_user.util.token_generator.default')->end()
-                            ->scalarNode('username_canonicalizer')->defaultValue('nucleos_user.util.canonicalizer.default')->end()
+                            ->scalarNode('mailer')->defaultValue('nucleos_user.mailer.simple')->end()
+                            ->scalarNode('email_canonicalizer')->defaultValue('nucleos_user.util.canonicalizer.simple')->end()
+                            ->scalarNode('token_generator')->defaultValue('nucleos_user.util.token_generator.simple')->end()
+                            ->scalarNode('username_canonicalizer')->defaultValue('nucleos_user.util.canonicalizer.simple')->end()
                             ->scalarNode('user_manager')->defaultValue('nucleos_user.user_manager.default')->end()
                         ->end()
                     ->end()
@@ -131,6 +132,21 @@ final class Configuration implements ConfigurationInterface
                     ->children()
                         ->scalarNode('group_class')->isRequired()->cannotBeEmpty()->end()
                         ->scalarNode('group_manager')->defaultValue('nucleos_user.group_manager.default')->end()
+                    ->end()
+                ->end()
+            ->end()
+        ;
+    }
+
+    private function addLoggedinSection(NodeDefinition $node): void
+    {
+        $node
+            ->addDefaultsIfNotSet()
+            ->children()
+                ->arrayNode('loggedin')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->scalarNode('route')->isRequired()->cannotBeEmpty()->end()
                     ->end()
                 ->end()
             ->end()

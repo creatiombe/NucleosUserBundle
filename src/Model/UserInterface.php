@@ -14,23 +14,20 @@ declare(strict_types=1);
 namespace Nucleos\UserBundle\Model;
 
 use DateTime;
-use Serializable;
 use Symfony\Component\Security\Core\User\EquatableInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface as BaseUserInterface;
 
-interface UserInterface extends PasswordAuthenticatedUserInterface, BaseUserInterface, EquatableInterface, Serializable
+interface UserInterface extends PasswordAuthenticatedUserInterface, BaseUserInterface, EquatableInterface
 {
     public const ROLE_DEFAULT = 'ROLE_USER';
 
     public const ROLE_SUPER_ADMIN = 'ROLE_SUPER_ADMIN';
 
     /**
-     * Returns the user unique id.
-     *
-     * @return mixed
+     * Returns the identifier for this user (e.g. its username or email address).
      */
-    public function getId();
+    public function getUserIdentifier(): string;
 
     /**
      * Gets the username. This is no longer provided by the parent interface
@@ -52,8 +49,6 @@ interface UserInterface extends PasswordAuthenticatedUserInterface, BaseUserInte
      * Sets the canonical username.
      */
     public function setUsernameCanonical(string $usernameCanonical): void;
-
-    public function setSalt(?string $salt): void;
 
     public function getEmail(): string;
 

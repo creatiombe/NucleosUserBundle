@@ -13,10 +13,10 @@ declare(strict_types=1);
 
 namespace Nucleos\UserBundle\DependencyInjection;
 
-use Nucleos\UserBundle\Mailer\MailerInterface;
-use Nucleos\UserBundle\Model\GroupManagerInterface;
-use Nucleos\UserBundle\Model\UserManagerInterface;
-use Nucleos\UserBundle\Util\TokenGeneratorInterface;
+use Nucleos\UserBundle\Mailer\ResettingMailer;
+use Nucleos\UserBundle\Model\GroupManager;
+use Nucleos\UserBundle\Model\UserManager;
+use Nucleos\UserBundle\Util\TokenGenerator;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Loader\FileLoader;
@@ -32,7 +32,7 @@ final class NucleosUserExtension extends Extension implements PrependExtensionIn
     /**
      * @var array<string, array<string, string>>
      */
-    private static $doctrineDrivers = [
+    private static array $doctrineDrivers = [
         'orm' => [
             'registry' => 'doctrine',
             'tag'      => 'doctrine.event_subscriber',
@@ -43,15 +43,7 @@ final class NucleosUserExtension extends Extension implements PrependExtensionIn
         ],
     ];
 
-    /**
-     * @var bool
-     */
-    private $mailerNeeded  = false;
-
-    /**
-     * @var bool
-     */
-    private $sessionNeeded = false;
+    private bool $mailerNeeded  = false;
 
     /**
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
@@ -91,7 +83,6 @@ final class NucleosUserExtension extends Extension implements PrependExtensionIn
         }
 
         if ($config['use_flash_notifications']) {
-            $this->sessionNeeded = true;
             $loader->load('flash_notifications.php');
         }
 
@@ -99,10 +90,10 @@ final class NucleosUserExtension extends Extension implements PrependExtensionIn
         $container->setAlias('nucleos_user.util.username_canonicalizer', new Alias($config['service']['username_canonicalizer'], true));
 
         $container->setAlias('nucleos_user.util.token_generator', new Alias($config['service']['token_generator'], true));
-        $container->setAlias(TokenGeneratorInterface::class, new Alias($config['service']['token_generator'], true));
+        $container->setAlias(TokenGenerator::class, new Alias($config['service']['token_generator'], true));
 
         $container->setAlias('nucleos_user.user_manager', new Alias($config['service']['user_manager'], true));
-        $container->setAlias(UserManagerInterface::class, new Alias($config['service']['user_manager'], true));
+        $container->setAlias(UserManager::class, new Alias($config['service']['user_manager'], true));
 
         if ($config['use_listener'] && isset(self::$doctrineDrivers[$config['db_driver']])) {
             $listenerDefinition = $container->getDefinition('nucleos_user.user_listener');
@@ -124,6 +115,7 @@ final class NucleosUserExtension extends Extension implements PrependExtensionIn
         $this->loadChangePassword($loader);
         $this->loadDeletion($config['deletion'], $loader);
         $this->loadResetting($config['resetting'], $container, $loader, $config['from_email']);
+        $this->loadLoggedin($config['loggedin'], $container);
 
         if (isset($config['group'])) {
             $this->loadGroups($config['group'], $container, $loader, $config['db_driver']);
@@ -131,12 +123,7 @@ final class NucleosUserExtension extends Extension implements PrependExtensionIn
 
         if ($this->mailerNeeded) {
             $container->setAlias('nucleos_user.mailer', new Alias($config['service']['mailer'], true));
-            $container->setAlias(MailerInterface::class, new Alias($config['service']['mailer'], true));
-        }
-
-        if ($this->sessionNeeded) {
-            // Use a private alias rather than a parameter, to avoid leaking it at runtime (the private alias will be removed)
-            $container->setAlias('nucleos_user.session', new Alias('session', false));
+            $container->setAlias(ResettingMailer::class, new Alias($config['service']['mailer'], true));
         }
     }
 
@@ -247,12 +234,17 @@ final class NucleosUserExtension extends Extension implements PrependExtensionIn
         }
 
         $container->setAlias('nucleos_user.group_manager', new Alias($config['group_manager'], true));
-        $container->setAlias(GroupManagerInterface::class, new Alias('nucleos_user.group_manager', true));
+        $container->setAlias(GroupManager::class, new Alias('nucleos_user.group_manager', true));
 
         $this->remapParametersNamespaces($config, $container, [
             '' => [
                 'group_class' => 'nucleos_user.model.group.class',
             ],
         ]);
+    }
+
+    private function loadLoggedin(array $config, ContainerBuilder $container): void
+    {
+        $container->setParameter('nucleos_user.loggedin.route', $config['route']);
     }
 }

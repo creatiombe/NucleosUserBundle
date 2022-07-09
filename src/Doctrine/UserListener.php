@@ -22,23 +22,17 @@ use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Doctrine\Persistence\ObjectManager;
 use Nucleos\UserBundle\Model\UserInterface;
 use Nucleos\UserBundle\Util\CanonicalFieldsUpdater;
-use Nucleos\UserBundle\Util\PasswordUpdaterInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 final class UserListener implements EventSubscriber
 {
-    /**
-     * @var PasswordUpdaterInterface
-     */
-    private $passwordUpdater;
+    private UserPasswordHasherInterface $userPasswordHasher;
 
-    /**
-     * @var CanonicalFieldsUpdater
-     */
-    private $canonicalFieldsUpdater;
+    private CanonicalFieldsUpdater $canonicalFieldsUpdater;
 
-    public function __construct(PasswordUpdaterInterface $passwordUpdater, CanonicalFieldsUpdater $canonicalFieldsUpdater)
+    public function __construct(UserPasswordHasherInterface $userPasswordHasher, CanonicalFieldsUpdater $canonicalFieldsUpdater)
     {
-        $this->passwordUpdater        = $passwordUpdater;
+        $this->userPasswordHasher     = $userPasswordHasher;
         $this->canonicalFieldsUpdater = $canonicalFieldsUpdater;
     }
 
@@ -70,7 +64,14 @@ final class UserListener implements EventSubscriber
     private function updateUserFields(UserInterface $user): void
     {
         $this->canonicalFieldsUpdater->updateCanonicalFields($user);
-        $this->passwordUpdater->hashPassword($user);
+
+        if (null === $user->getPlainPassword()) {
+            return;
+        }
+
+        $user->setPassword(
+            $this->userPasswordHasher->hashPassword($user, $user->getPlainPassword())
+        );
     }
 
     private function recomputeChangeSet(ObjectManager $om, UserInterface $user): void

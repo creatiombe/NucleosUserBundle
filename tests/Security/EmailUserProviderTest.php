@@ -15,29 +15,26 @@ namespace Nucleos\UserBundle\Tests\Security;
 
 use Nucleos\UserBundle\Model\User;
 use Nucleos\UserBundle\Model\UserInterface;
-use Nucleos\UserBundle\Model\UserManagerInterface;
+use Nucleos\UserBundle\Model\UserManager;
 use Nucleos\UserBundle\Security\EmailUserProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
-use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface as SymfonyUserInterface;
 
 final class EmailUserProviderTest extends TestCase
 {
     /**
-     * @var MockObject
+     * @var MockObject&UserManager
      */
-    private $userManager;
+    private UserManager $userManager;
 
-    /**
-     * @var EmailUserProvider
-     */
-    private $userProvider;
+    private EmailUserProvider $userProvider;
 
     protected function setUp(): void
     {
-        $this->userManager  = $this->getMockBuilder(UserManagerInterface::class)->getMock();
+        $this->userManager  = $this->getMockBuilder(UserManager::class)->getMock();
         $this->userProvider = new EmailUserProvider($this->userManager);
     }
 
@@ -45,7 +42,7 @@ final class EmailUserProviderTest extends TestCase
     {
         $user = $this->getMockBuilder(UserInterface::class)->getMock();
         $this->userManager->expects(static::once())
-            ->method('findUserByUsernameOrEmail')
+            ->method('findUserByUsername')
             ->with('foobar')
             ->willReturn($user)
         ;
@@ -55,10 +52,10 @@ final class EmailUserProviderTest extends TestCase
 
     public function testLoadUserByInvalidUsername(): void
     {
-        $this->expectException(UsernameNotFoundException::class);
+        $this->expectException(AuthenticationException::class);
 
         $this->userManager->expects(static::once())
-            ->method('findUserByUsernameOrEmail')
+            ->method('findUserByUsername')
             ->with('foobar')
             ->willReturn(null)
         ;
@@ -68,20 +65,17 @@ final class EmailUserProviderTest extends TestCase
 
     public function testRefreshUserBy(): void
     {
-        $user = $this->getMockBuilder(User::class)
-                    ->setMethods(['getId'])
-                    ->getMock()
-        ;
+        $user = $this->getMockBuilder(User::class)->getMock();
 
         $user->expects(static::once())
-            ->method('getId')
+            ->method('getUserIdentifier')
             ->willReturn('123')
         ;
 
         $refreshedUser = $this->getMockBuilder(UserInterface::class)->getMock();
         $this->userManager->expects(static::once())
-            ->method('findUserBy')
-            ->with(['id' => '123'])
+            ->method('findUserByUsername')
+            ->with('123')
             ->willReturn($refreshedUser)
         ;
 
